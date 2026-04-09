@@ -1,23 +1,7 @@
-/**
- * Copyright 2026 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 'use client';
 
 import { Widget } from '@/types/widget';
-import { A2UIViewer } from '@copilotkit/a2ui-renderer';
+import { A2UIViewer } from '@/lib/a2ui';
 
 interface GalleryWidgetProps {
   widget: Widget;
@@ -30,26 +14,32 @@ export function GalleryWidget({ widget, height = 200, onClick }: GalleryWidgetPr
   const previewData = widget.dataStates?.[0]?.data ?? {};
 
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
-      className="w-full text-left rounded-xl border border-white bg-white/80 p-4 shadow-sm transition-all hover:shadow-md hover:border-muted-foreground/30 cursor-pointer overflow-hidden"
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } }}
+      className="w-full text-left rounded-xl border p-4 shadow-sm transition-all hover:shadow-md cursor-pointer overflow-hidden bg-white/80 border-white hover:border-muted-foreground/30"
       style={{ minHeight: height }}
     >
       <div className="flex flex-col gap-2 h-full">
         <span className="text-xs font-medium text-muted-foreground">
           {widget.name}
         </span>
-        <div
-          className="pointer-events-none flex-1 flex items-center justify-center"
-          style={{ '--a2ui-card-bg': 'transparent' } as React.CSSProperties}
-        >
-          <A2UIViewer
-            root={widget.root}
-            components={widget.components}
-            data={previewData}
-          />
+        <div className="pointer-events-none flex-1 flex items-center justify-center overflow-hidden">
+          <div
+            className="a2ui-style-composer w-full"
+            // Vertical-only 6px margin for compact gallery previews (default is 8px all sides)
+            style={{ '--a2ui-leaf-margin': '6px 0' } as React.CSSProperties}
+          >
+            <A2UIViewer
+              root={widget.root}
+              components={widget.components}
+              data={previewData}
+            />
+          </div>
         </div>
       </div>
-    </button>
+    </div>
   );
 }

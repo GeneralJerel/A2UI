@@ -1,25 +1,9 @@
-/**
- * Copyright 2026 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 'use client';
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ExternalLink, Copy, Check } from 'lucide-react';
-import { A2UIViewer } from '@copilotkit/a2ui-renderer';
+import { A2UIViewer } from '@/lib/a2ui';
 
 // 100 most important Material Icons for common UI patterns
 const MATERIAL_ICONS = [
@@ -67,6 +51,8 @@ const MATERIAL_ICONS = [
 ];
 
 function IconCard({ name, isSelected, onClick }: { name: string; isSelected: boolean; onClick: () => void }) {
+  const iconComponents = [{ id: 'icon', component: 'Icon', name }];
+
   return (
     <button
       onClick={onClick}
@@ -80,16 +66,7 @@ function IconCard({ name, isSelected, onClick }: { name: string; isSelected: boo
       <div className="flex h-12 w-12 items-center justify-center scale-[2]">
         <A2UIViewer
           root="icon"
-          components={[
-            {
-              id: 'icon',
-              component: {
-                Icon: {
-                  name: { literalString: name },
-                },
-              },
-            },
-          ]}
+          components={iconComponents}
         />
       </div>
       <span className="text-xs text-muted-foreground truncate w-full text-center">
@@ -104,7 +81,7 @@ export default function IconsPage() {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async (name: string) => {
-    const code = `{ "Icon": { "name": { "literalString": "${name}" } } }`;
+    const code = `{ "component": "Icon", "name": "${name}" }`;
     await navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -133,7 +110,7 @@ export default function IconsPage() {
               ) : (
                 <>
                   <Copy className="h-4 w-4" />
-                  Copy "{selectedIcon}"
+                  Copy &quot;{selectedIcon}&quot;
                 </>
               )}
             </button>

@@ -1,37 +1,23 @@
-/**
- * Copyright 2026 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 'use client';
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { COMPONENTS_DATA, ComponentDoc } from '@/lib/components-data';
-import { A2UIViewer } from '@copilotkit/a2ui-renderer';
+import { COMPONENTS_DATA_V09 as COMPONENTS_DATA, type ComponentDoc } from '@/lib/components-data-v09';
+import { A2UIViewer } from '@/lib/a2ui';
 
 function ComponentSidebar({
   selectedComponent,
   onSelect,
+  componentsData,
 }: {
   selectedComponent: string;
   onSelect: (name: string) => void;
+  componentsData: typeof COMPONENTS_DATA;
 }) {
   return (
     <nav className="w-48 shrink-0 border-r border-border overflow-auto">
       <div className="p-4">
-        {COMPONENTS_DATA.map((category) => (
+        {componentsData.map((category) => (
           <div key={category.name} className="mb-4">
             <div className="text-sm text-muted-foreground mb-2">{category.name}</div>
             <div className="flex flex-col gap-0.5">
@@ -96,7 +82,7 @@ function PropValues({ values }: { values: string[] }) {
           key={value}
           className="px-1.5 py-0.5 text-xs rounded bg-green-50 text-green-700 border border-green-200"
         >
-          "{value}"
+          &quot;{value}&quot;
         </code>
       ))}
     </div>
@@ -187,10 +173,11 @@ function ComponentContent({ component }: { component: ComponentDoc }) {
 }
 
 export default function ComponentsPage() {
+  const componentsData = COMPONENTS_DATA;
   const [selectedComponent, setSelectedComponent] = useState('Row');
 
   // Find the selected component
-  const component = COMPONENTS_DATA
+  const component = componentsData
     .flatMap((cat) => cat.components)
     .find((c) => c.name === selectedComponent);
 
@@ -199,6 +186,7 @@ export default function ComponentsPage() {
       <ComponentSidebar
         selectedComponent={selectedComponent}
         onSelect={setSelectedComponent}
+        componentsData={componentsData}
       />
       {component && <ComponentContent component={component} />}
     </div>

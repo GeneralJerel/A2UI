@@ -1,23 +1,8 @@
-/**
- * Copyright 2026 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 "use client";
 
 import { CopilotKitProvider } from "@copilotkit/react-core/v2";
 import { WidgetsProvider } from "@/contexts/widgets-context";
+import { CatalogProvider } from "@/contexts/catalog-context";
 import { Sidebar } from "./sidebar";
 
 interface AppShellProps {
@@ -27,9 +12,10 @@ interface AppShellProps {
 export function AppShell({ children }: AppShellProps) {
   return (
     <CopilotKitProvider runtimeUrl="/api/copilotkit" showDevConsole="auto">
+      <CatalogProvider>
       <WidgetsProvider>
         <div className="relative flex h-screen overflow-hidden bg-palette-surface-main p-2">
-          {/* Background blur circles - Glassy effect from theater */}
+          {/* Background blur circles - Glassy effect from dojo */}
           {/* Ellipse 1351 - Orange glow top right */}
           <div
             className="absolute w-[445.84px] h-[445.84px] left-[1040px] top-[11px] rounded-full z-0 pointer-events-none"
@@ -83,6 +69,7 @@ export function AppShell({ children }: AppShellProps) {
           </div>
         </div>
       </WidgetsProvider>
+      </CatalogProvider>
     </CopilotKitProvider>
   );
 }

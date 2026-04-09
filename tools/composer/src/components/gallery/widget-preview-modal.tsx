@@ -1,26 +1,10 @@
-/**
- * Copyright 2026 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 'use client';
 
 import { useEffect } from 'react';
 import { X, RotateCcw, ExternalLink } from 'lucide-react';
 import { Widget } from '@/types/widget';
 import { Button } from '@/components/ui/button';
-import { A2UIViewer } from '@copilotkit/a2ui-renderer';
+import { A2UIViewer } from '@/lib/a2ui';
 import Editor from '@monaco-editor/react';
 
 interface WidgetPreviewModalProps {
@@ -81,11 +65,13 @@ export function WidgetPreviewModal({ widget, onClose, onOpenInEditor }: WidgetPr
 
           {/* Preview area */}
           <div className="flex flex-1 items-center justify-center p-8 bg-muted/30">
-            <A2UIViewer
-              root={widget.root}
-              components={widget.components}
-              data={previewData}
-            />
+            <div className="a2ui-style-composer max-w-md w-full">
+              <A2UIViewer
+                root={widget.root}
+                components={widget.components}
+                data={previewData}
+              />
+            </div>
           </div>
         </div>
 
@@ -104,7 +90,7 @@ export function WidgetPreviewModal({ widget, onClose, onOpenInEditor }: WidgetPr
           </div>
 
           {/* Components section */}
-          <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex-[2] flex flex-col min-h-0">
             <div className="flex-1 min-h-0">
               <Editor
                 height="100%"
@@ -132,7 +118,7 @@ export function WidgetPreviewModal({ widget, onClose, onOpenInEditor }: WidgetPr
           </div>
 
           {/* Data section */}
-          <div className="h-1/3 flex flex-col border-t border-border">
+          <div className="flex-1 flex flex-col border-t border-border">
             <div className="px-4 py-1.5 bg-white border-b border-border shrink-0">
               <span className="text-xs font-medium text-muted-foreground">Data</span>
             </div>

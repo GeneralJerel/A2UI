@@ -1,24 +1,8 @@
-/**
- * Copyright 2026 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 'use client';
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { Widget } from '@/types/widget';
-import { getWidgets, saveWidget, deleteWidget } from '@/lib/storage';
+import { getWidgets, saveWidget, deleteWidget, clearAllWidgets, didMigrationWipe } from '@/lib/storage';
 
 // Module-level cache - persists outside React tree
 let cachedWidgets: Widget[] | null = null;
@@ -27,12 +11,12 @@ let initPromise: Promise<void> | null = null;
 async function initializeStore(
   setWidgets: (w: Widget[]) => void,
   setLoading: (l: boolean) => void
-) {
+): Promise<boolean> {
   // If already cached, use immediately
   if (cachedWidgets !== null) {
     setWidgets(cachedWidgets);
     setLoading(false);
-    return;
+    return false;
   }
 
   // If fetch in progress, wait for it
@@ -42,7 +26,7 @@ async function initializeStore(
       setWidgets(cachedWidgets);
       setLoading(false);
     }
-    return;
+    return false;
   }
 
   // First time - fetch and cache
@@ -52,14 +36,18 @@ async function initializeStore(
   await initPromise;
   setWidgets(cachedWidgets!);
   setLoading(false);
+  return didMigrationWipe();
 }
 
 interface WidgetsContextType {
   widgets: Widget[];
   loading: boolean;
+  migrationNotice: boolean;
+  dismissMigrationNotice: () => void;
   addWidget: (widget: Widget) => Promise<void>;
   updateWidget: (id: string, updates: Partial<Widget>) => Promise<void>;
   removeWidget: (id: string) => Promise<void>;
+  removeAllWidgets: () => Promise<void>;
   getWidget: (id: string) => Widget | undefined;
 }
 
@@ -69,9 +57,12 @@ export function WidgetsProvider({ children }: { children: ReactNode }) {
   // Initialize from cache if available
   const [widgets, setWidgets] = useState<Widget[]>(cachedWidgets ?? []);
   const [loading, setLoading] = useState(cachedWidgets === null);
+  const [migrationNotice, setMigrationNotice] = useState(false);
 
   useEffect(() => {
-    initializeStore(setWidgets, setLoading);
+    initializeStore(setWidgets, setLoading).then(wiped => {
+      if (wiped) setMigrationNotice(true);
+    });
   }, []);
 
   const addWidget = useCallback(async (widget: Widget) => {
@@ -84,17 +75,21 @@ export function WidgetsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateWidget = useCallback(async (id: string, updates: Partial<Widget>) => {
+    let widgetToSave: Widget | null = null;
     setWidgets(prev => {
       const widget = prev.find(w => w.id === id);
       if (widget) {
         const updated = { ...widget, ...updates, updatedAt: new Date() };
-        saveWidget(updated);
+        widgetToSave = updated;
         const newWidgets = prev.map(w => w.id === id ? updated : w);
         cachedWidgets = newWidgets;
         return newWidgets;
       }
       return prev;
     });
+    if (widgetToSave) {
+      await saveWidget(widgetToSave).catch(err => console.error('Failed to persist widget:', err));
+    }
   }, []);
 
   const removeWidget = useCallback(async (id: string) => {
@@ -106,12 +101,20 @@ export function WidgetsProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const removeAllWidgets = useCallback(async () => {
+    await clearAllWidgets();
+    cachedWidgets = [];
+    setWidgets([]);
+  }, []);
+
   const getWidget = useCallback((id: string) => {
     return widgets.find(w => w.id === id);
   }, [widgets]);
 
+  const dismissMigrationNotice = useCallback(() => setMigrationNotice(false), []);
+
   return (
-    <WidgetsContext.Provider value={{ widgets, loading, addWidget, updateWidget, removeWidget, getWidget }}>
+    <WidgetsContext.Provider value={{ widgets, loading, migrationNotice, dismissMigrationNotice, addWidget, updateWidget, removeWidget, removeAllWidgets, getWidget }}>
       {children}
     </WidgetsContext.Provider>
   );

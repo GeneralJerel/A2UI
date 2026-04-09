@@ -1,25 +1,9 @@
-/**
- * Copyright 2026 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 "use client";
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, Trash, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWidgets } from "@/contexts/widgets-context";
 import {
@@ -196,7 +180,15 @@ interface SidebarWidgetsProps {
 export function SidebarWidgets({ onNavigate }: SidebarWidgetsProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { widgets, loading, updateWidget, removeWidget } = useWidgets();
+  const { widgets, loading, migrationNotice, dismissMigrationNotice, updateWidget, removeWidget, removeAllWidgets } =
+    useWidgets();
+  const [showClearAllDialog, setShowClearAllDialog] = useState(false);
+
+  const handleClearAll = () => {
+    removeAllWidgets();
+    setShowClearAllDialog(false);
+    router.push("/");
+  };
 
   const handleRename = (id: string, newName: string) => {
     updateWidget(id, { name: newName });
@@ -216,33 +208,79 @@ export function SidebarWidgets({ onNavigate }: SidebarWidgetsProps) {
     : null;
 
   return (
-    <div className="flex flex-col gap-2 h-full">
-      <span className="px-3 text-xs font-medium text-muted-foreground">
-        Widgets
-      </span>
-      <div className="flex flex-col gap-1 overflow-auto flex-1 min-h-0">
-        {loading ? (
-          <div className="px-3 py-2 text-sm text-muted-foreground">
-            Loading...
+    <>
+      <div className="flex flex-col gap-2 h-full">
+        {migrationNotice && (
+          <div className="mx-2 flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-800">
+            <span className="flex-1">Widgets were cleared due to a format update.</span>
+            <button onClick={dismissMigrationNotice} className="shrink-0 hover:text-amber-950 cursor-pointer">
+              <X className="h-3 w-3" />
+            </button>
           </div>
-        ) : widgets.length === 0 ? (
-          <div className="px-3 py-2 text-sm text-muted-foreground">
-            No widgets yet
-          </div>
-        ) : (
-          widgets.map((widget) => (
-            <WidgetItem
-              key={widget.id}
-              id={widget.id}
-              name={widget.name}
-              isSelected={currentWidgetId === widget.id}
-              onRename={(newName) => handleRename(widget.id, newName)}
-              onDelete={() => handleDelete(widget.id)}
-              onNavigate={onNavigate}
-            />
-          ))
         )}
+        <div className="flex items-center justify-between px-3">
+          <span className="text-xs font-medium text-muted-foreground">
+            Widgets
+          </span>
+          {widgets.length > 1 && (
+            <button
+              onClick={() => setShowClearAllDialog(true)}
+              className="text-xs text-muted-foreground hover:text-red-600 transition-colors cursor-pointer flex items-center gap-1"
+              title="Clear all widgets"
+            >
+              <Trash className="h-3 w-3" />
+              Clear
+            </button>
+          )}
+        </div>
+        <div className="flex flex-col gap-1 overflow-auto flex-1 min-h-0">
+          {loading ? (
+            <div className="px-3 py-2 text-sm text-muted-foreground">
+              Loading...
+            </div>
+          ) : widgets.length === 0 ? (
+            <div className="px-3 py-2 text-sm text-muted-foreground">
+              No widgets yet
+            </div>
+          ) : (
+            widgets.map((widget) => (
+              <WidgetItem
+                key={widget.id}
+                id={widget.id}
+                name={widget.name}
+                isSelected={currentWidgetId === widget.id}
+                onRename={(newName) => handleRename(widget.id, newName)}
+                onDelete={() => handleDelete(widget.id)}
+                onNavigate={onNavigate}
+              />
+            ))
+          )}
+        </div>
       </div>
-    </div>
+
+      <AlertDialog open={showClearAllDialog} onOpenChange={setShowClearAllDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear all widgets?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will delete all {widgets.length} widgets. All widget data is
+              stored locally on your device so there is no backup. This action
+              cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
+            <AlertDialogAction
+              onClick={handleClearAll}
+              className="w-full rounded-full bg-red-600 hover:bg-red-700 cursor-pointer"
+            >
+              Delete All
+            </AlertDialogAction>
+            <AlertDialogCancel className="w-full rounded-full cursor-pointer">
+              Cancel
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
