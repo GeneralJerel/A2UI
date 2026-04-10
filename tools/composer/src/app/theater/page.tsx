@@ -393,6 +393,7 @@ export default function TheaterPage() {
                     {surfaceState.components.length > 0 ? (
                       <div className="w-full flex items-start justify-center">
                         <A2UIViewer
+                          specVersion="0.9"
                           root={surfaceState.root}
                           components={surfaceState.components}
                           data={surfaceState.data}
