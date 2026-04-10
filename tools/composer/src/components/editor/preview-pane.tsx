@@ -94,7 +94,7 @@ export function PreviewPane({ root, components, data, specVersion }: PreviewPane
           )}
         </Button>
       </div>
-      <div className="flex flex-1 items-start justify-center p-8 overflow-auto">
+      <div className="flex flex-1 items-start justify-center p-8 overflow-auto min-w-0">
         <PreviewErrorBoundary resetKey={resetKey}>
           <A2UIViewer
             root={root}

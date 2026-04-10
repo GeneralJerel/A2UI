@@ -22,6 +22,7 @@
  */
 export { V08_GALLERY_WIDGETS } from './v08';
 export { V09_GALLERY_WIDGETS } from './v09';
+export { V09_GALLERY_WIDGETS as GALLERY_WIDGETS } from './v09';
 
 // Re-export all individual widgets for direct imports
 export * from './v08';
