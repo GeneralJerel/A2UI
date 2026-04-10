@@ -18,7 +18,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { Widget } from '@/types/widget';
-import { getWidgets, saveWidget, deleteWidget } from '@/lib/storage';
+import { getWidgets, saveWidget, deleteWidget, clearAllWidgets } from '@/lib/storage';
 
 // Module-level cache - persists outside React tree
 let cachedWidgets: Widget[] | null = null;
@@ -60,6 +60,7 @@ interface WidgetsContextType {
   addWidget: (widget: Widget) => Promise<void>;
   updateWidget: (id: string, updates: Partial<Widget>) => Promise<void>;
   removeWidget: (id: string) => Promise<void>;
+  removeAllWidgets: () => Promise<void>;
   getWidget: (id: string) => Widget | undefined;
 }
 
@@ -69,13 +70,27 @@ export function WidgetsProvider({ children }: { children: ReactNode }) {
   // Initialize from cache if available
   const [widgets, setWidgets] = useState<Widget[]>(cachedWidgets ?? []);
   const [loading, setLoading] = useState(cachedWidgets === null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Auto-dismiss save error after 5 seconds
+  useEffect(() => {
+    if (saveError) {
+      const timer = setTimeout(() => setSaveError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [saveError]);
 
   useEffect(() => {
     initializeStore(setWidgets, setLoading);
   }, []);
 
   const addWidget = useCallback(async (widget: Widget) => {
-    await saveWidget(widget);
+    try {
+      await saveWidget(widget);
+    } catch (err) {
+      console.error('Failed to save widget:', err);
+      setSaveError('Failed to save widget. Please try again.');
+    }
     setWidgets(prev => {
       const updated = [...prev, widget];
       cachedWidgets = updated;
@@ -84,21 +99,33 @@ export function WidgetsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateWidget = useCallback(async (id: string, updates: Partial<Widget>) => {
+    let widgetToSave: Widget | null = null;
     setWidgets(prev => {
       const widget = prev.find(w => w.id === id);
       if (widget) {
         const updated = { ...widget, ...updates, updatedAt: new Date() };
-        saveWidget(updated);
+        widgetToSave = updated;
         const newWidgets = prev.map(w => w.id === id ? updated : w);
         cachedWidgets = newWidgets;
         return newWidgets;
       }
       return prev;
     });
+    if (widgetToSave) {
+      await saveWidget(widgetToSave).catch(err => {
+        console.error('Failed to persist widget:', err);
+        setSaveError('Failed to save changes. Please try again.');
+      });
+    }
   }, []);
 
   const removeWidget = useCallback(async (id: string) => {
-    await deleteWidget(id);
+    try {
+      await deleteWidget(id);
+    } catch (err) {
+      console.error('Failed to delete widget:', err);
+      setSaveError('Failed to delete widget. Please try again.');
+    }
     setWidgets(prev => {
       const updated = prev.filter(w => w.id !== id);
       cachedWidgets = updated;
@@ -106,13 +133,39 @@ export function WidgetsProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const removeAllWidgets = useCallback(async () => {
+    try {
+      await clearAllWidgets();
+    } catch (err) {
+      console.error('Failed to clear widgets:', err);
+      setSaveError('Failed to clear widgets. Please try again.');
+    }
+    cachedWidgets = [];
+    setWidgets([]);
+  }, []);
+
   const getWidget = useCallback((id: string) => {
     return widgets.find(w => w.id === id);
   }, [widgets]);
 
   return (
-    <WidgetsContext.Provider value={{ widgets, loading, addWidget, updateWidget, removeWidget, getWidget }}>
+    <WidgetsContext.Provider value={{ widgets, loading, addWidget, updateWidget, removeWidget, removeAllWidgets, getWidget }}>
       {children}
+      {saveError && (
+        <div
+          role="alert"
+          className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-lg bg-red-600 px-4 py-3 text-sm text-white shadow-lg"
+        >
+          <span>{saveError}</span>
+          <button
+            onClick={() => setSaveError(null)}
+            className="ml-2 font-bold hover:opacity-80"
+            aria-label="Dismiss"
+          >
+            &times;
+          </button>
+        </div>
+      )}
     </WidgetsContext.Provider>
   );
 }

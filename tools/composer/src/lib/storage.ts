@@ -44,3 +44,7 @@ export async function deleteWidget(id: string): Promise<void> {
   const widgets = await getWidgets();
   await localforage.setItem(WIDGETS_KEY, widgets.filter(w => w.id !== id));
 }
+
+export async function clearAllWidgets(): Promise<void> {
+  await localforage.setItem(WIDGETS_KEY, []);
+}
