@@ -71,23 +71,23 @@ function colorizeJson(json: string): React.ReactNode[] {
     }
     if (match[1] && match[2]) {
       // Key
-      parts.push(<span key={key++} className="text-blue-400">{match[1]}</span>);
-      parts.push(<span key={key++} className="text-foreground/50">{match[2]}</span>);
+      parts.push(<span key={key++} className="text-blue-700">{match[1]}</span>);
+      parts.push(<span key={key++} className="text-foreground/60">{match[2]}</span>);
     } else if (match[1]) {
       // String value
-      parts.push(<span key={key++} className="text-green-400">{match[1]}</span>);
+      parts.push(<span key={key++} className="text-green-700">{match[1]}</span>);
     } else if (match[3]) {
       // Number
-      parts.push(<span key={key++} className="text-amber-400">{match[3]}</span>);
+      parts.push(<span key={key++} className="text-amber-700">{match[3]}</span>);
     } else if (match[4]) {
       // Boolean
-      parts.push(<span key={key++} className="text-purple-400">{match[4]}</span>);
+      parts.push(<span key={key++} className="text-purple-700">{match[4]}</span>);
     } else if (match[5]) {
       // Null
-      parts.push(<span key={key++} className="text-red-400">{match[5]}</span>);
+      parts.push(<span key={key++} className="text-red-600">{match[5]}</span>);
     } else if (match[6]) {
       // Structural chars
-      parts.push(<span key={key++} className="text-foreground/40">{match[6]}</span>);
+      parts.push(<span key={key++} className="text-foreground/60">{match[6]}</span>);
     }
     lastIndex = match.index + match[0].length;
   }
@@ -468,7 +468,7 @@ export default function TheaterPage() {
                   </div>
                   <div className="p-4 bg-dot-pattern">
                     {activeMessages.length > 0 ? (
-                      <div className="w-full flex items-start justify-center">
+                      <div className="w-full min-w-0 overflow-hidden">
                         <A2UIViewer
                           root={surfaceState.root}
                           components={surfaceState.components}

@@ -144,7 +144,7 @@ export const A2uiSurface: React.FC<{surface: SurfaceModel<ReactComponentImplemen
   const themeStyle = useMemo(() => themeToStyle(surface.theme), [surface.theme]);
   // The root component always has ID 'root' and base path '/'
   return (
-    <div style={themeStyle}>
+    <div style={{ ...themeStyle, width: '100%', overflow: 'hidden' }}>
       <DeferredChild surface={surface} id="root" basePath="/" />
     </div>
   );
