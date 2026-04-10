@@ -28,7 +28,8 @@ export const Image = createComponentImplementation(ImageApi, ({props}) => {
   const style: React.CSSProperties = {
     ...getBaseLeafStyle(),
     objectFit: mapFit(props.fit),
-    width: '100%',
+    maxWidth: '100%',
+    minWidth: 0,
     height: 'auto',
     display: 'block',
   };

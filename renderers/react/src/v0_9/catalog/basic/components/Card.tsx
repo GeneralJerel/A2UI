@@ -24,7 +24,6 @@ export const Card = createComponentImplementation(CardApi, ({props, buildChild})
     ...getBaseContainerStyle(),
     backgroundColor: '#fff',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    width: '100%',
   };
 
   return <div style={style}>{props.child ? buildChild(props.child) : null}</div>;
