@@ -33,7 +33,7 @@ const DEFAULT_COMPONENTS: A2UIComponent[] = [
   {
     id: "content",
     component: "Text",
-    value: "Hello World",
+    text: "Hello World",
     variant: "body",
   },
 ];
