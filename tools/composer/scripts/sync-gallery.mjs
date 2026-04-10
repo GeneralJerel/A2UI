@@ -58,9 +58,9 @@ const HEIGHTS = {
   'coffee-order': 420, 'sports-player': 380, 'account-balance': 280,
   'workout-summary': 320, 'event-detail': 320, 'track-list': 380,
   'software-purchase': 380, 'restaurant-card': 340, 'shipping-status': 380,
-  'credit-card': 280, 'step-counter': 320, 'recipe-card': 380,
+  'credit-card': 280, 'step-counter': 320, 'recipe-card': 300,
   'contact-card': 400, 'podcast-episode': 300, 'stats-card': 240,
-  'countdown-timer': 260, 'movie-card': 380,
+  'countdown-timer': 260, 'movie-card': 380, 'financial-data-grid': 220,
 };
 const DEFAULT_HEIGHT = 340;
 

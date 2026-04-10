@@ -1,6 +1,6 @@
 {
   "name": "Financial Data Grid",
-  "description": "Demonstrates complex layout weighting and alignment using Rows and Columns with templates.",
+  "description": "Demonstrates layout weighting and alignment using Rows and Columns with templates.",
   "messages": [
     {
       "version": "v0.9",
@@ -35,8 +35,7 @@
             "children": [
               "col-asset",
               "col-price",
-              "col-change",
-              "col-market-cap"
+              "col-change"
             ],
             "align": "center"
           },
@@ -45,28 +44,21 @@
             "component": "Text",
             "text": "Asset",
             "variant": "caption",
-            "weight": 2
+            "weight": 1.5
           },
           {
             "id": "col-price",
             "component": "Text",
             "text": "Price",
             "variant": "caption",
-            "weight": 1
+            "weight": 1.5
           },
           {
             "id": "col-change",
             "component": "Text",
-            "text": "24h Change",
+            "text": "Change",
             "variant": "caption",
             "weight": 1
-          },
-          {
-            "id": "col-market-cap",
-            "component": "Text",
-            "text": "Market Cap",
-            "variant": "caption",
-            "weight": 1.5
           },
           {
             "id": "grid-list",
@@ -80,71 +72,29 @@
             "id": "row-template",
             "component": "Row",
             "children": [
-              "asset-info",
+              "asset-name",
               "asset-price",
-              "asset-change",
-              "asset-market-cap"
+              "asset-change"
             ],
             "align": "center"
-          },
-          {
-            "id": "asset-info",
-            "component": "Row",
-            "children": ["asset-icon", "asset-name-col"],
-            "weight": 2,
-            "align": "center"
-          },
-          {
-            "id": "asset-icon",
-            "component": "Icon",
-            "name": "payment"
-          },
-          {
-            "id": "asset-name-col",
-            "component": "Column",
-            "children": ["asset-name", "asset-symbol"]
           },
           {
             "id": "asset-name",
             "component": "Text",
             "text": { "path": "name" },
-            "variant": "body"
-          },
-          {
-            "id": "asset-symbol",
-            "component": "Text",
-            "text": { "path": "symbol" },
-            "variant": "caption"
+            "weight": 1.5
           },
           {
             "id": "asset-price",
             "component": "Text",
-            "text": {
-              "call": "formatCurrency",
-              "args": { "value": { "path": "price" }, "currency": "USD" },
-              "returnType": "string"
-            },
-            "weight": 1
+            "text": { "path": "price" },
+            "weight": 1.5
           },
           {
             "id": "asset-change",
             "component": "Text",
-            "text": {
-              "call": "formatString",
-              "args": { "value": "${change}%" },
-              "returnType": "string"
-            },
+            "text": { "path": "change" },
             "weight": 1
-          },
-          {
-            "id": "asset-market-cap",
-            "component": "Text",
-            "text": {
-              "call": "formatCurrency",
-              "args": { "value": { "path": "marketCap" }, "currency": "USD" },
-              "returnType": "string"
-            },
-            "weight": 1.5
           }
         ]
       }
@@ -155,9 +105,9 @@
         "surfaceId": "gallery-financial-grid",
         "value": {
           "assets": [
-            { "name": "Bitcoin", "symbol": "BTC", "price": 43500.25, "change": 1.2, "marketCap": 850000000000 },
-            { "name": "Ethereum", "symbol": "ETH", "price": 2250.50, "change": -0.5, "marketCap": 270000000000 },
-            { "name": "Solana", "symbol": "SOL", "price": 95.80, "change": 5.4, "marketCap": 40000000000 }
+            { "name": "Bitcoin", "price": "$43,500", "change": "+1.2%" },
+            { "name": "Ethereum", "price": "$2,250", "change": "-0.5%" },
+            { "name": "Solana", "price": "$95.80", "change": "+5.4%" }
           ]
         }
       }
