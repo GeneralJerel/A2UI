@@ -38,7 +38,7 @@ export const Text = createComponentImplementation(TextApi, ({props}) => {
     case 'h5':
       return <h5 style={style}>{text}</h5>;
     case 'caption':
-      return <caption style={{...style, color: '#666', textAlign: 'left'}}>{text}</caption>;
+      return <span style={{...style, color: '#666', textAlign: 'left'}}>{text}</span>;
     case 'body':
     default:
       return <span style={style}>{text}</span>;
