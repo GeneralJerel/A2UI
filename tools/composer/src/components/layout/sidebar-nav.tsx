@@ -26,10 +26,8 @@ import {
   LucideIcon,
   BookOpen,
   Play,
-  Puzzle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useCatalog } from "@/contexts/catalog-context";
 
 interface NavItemProps {
   icon: LucideIcon;
@@ -85,13 +83,11 @@ interface SidebarNavProps {
 
 export function SidebarNav({ onNavigate }: SidebarNavProps) {
   const pathname = usePathname();
-  const { activeCatalog } = useCatalog();
 
   const navItems = [
     { icon: SquarePlus, label: "Create", href: "/" },
     { icon: LayoutGrid, label: "Gallery", href: "/gallery" },
     { icon: Box, label: "Basic Components", href: "/components" },
-    { icon: Puzzle, label: "Custom Catalog", href: "/catalog", badge: activeCatalog.isBasic ? undefined : "Active" },
     { icon: Shapes, label: "Icons", href: "/icons" },
     { icon: Play, label: "Theater", subtitle: "JSONL Playback", href: "/theater" },
     {
@@ -114,7 +110,6 @@ export function SidebarNav({ onNavigate }: SidebarNavProps) {
           href={item.href}
           external={item.external}
           selected={pathname === item.href}
-          badge={'badge' in item ? item.badge : undefined}
           onClick={onNavigate}
         />
       ))}

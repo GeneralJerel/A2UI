@@ -23,10 +23,8 @@
 'use client';
 
 import { useMemo, useRef } from 'react';
-import { A2uiSurface, basicCatalog, STANDARD_CATALOG_URL } from '@/lib/a2ui-v09-renderer';
-import { Catalog } from '@a2ui/web_core/v0_9';
+import { A2uiSurface, basicCatalog } from '@/lib/a2ui-v09-renderer';
 import { MessageProcessor } from '@a2ui/web_core/v0_9';
-import type { ReactComponentImplementation } from '@/lib/a2ui-v09-renderer/adapter';
 
 const SURFACE_ID = 'v09-preview';
 
@@ -42,8 +40,6 @@ export interface V09ViewerProps {
   data?: Record<string, unknown>;
   theme?: Record<string, unknown>;
   onAction?: (action: unknown) => void;
-  /** Optional custom catalog. Falls back to basicCatalog. */
-  catalog?: Catalog<ReactComponentImplementation>;
 }
 
 export function V09Viewer({
@@ -52,18 +48,16 @@ export function V09Viewer({
   data = {},
   theme,
   onAction,
-  catalog,
 }: V09ViewerProps) {
   const onActionRef = useRef(onAction);
   onActionRef.current = onAction;
 
-  const activeCatalog = catalog ?? basicCatalog;
-  const catalogId = activeCatalog.id;
+  const catalogId = basicCatalog.id;
 
   const surface = useMemo(() => {
     const actionHandler = (action: unknown) => onActionRef.current?.(action);
     const processor = new MessageProcessor(
-      [activeCatalog],
+      [basicCatalog],
       actionHandler,
     );
 
@@ -104,7 +98,7 @@ export function V09Viewer({
 
     return processor.model.getSurface(SURFACE_ID);
   // eslint-disable-next-line react-hooks/exhaustive-deps -- onAction stabilized via ref
-  }, [root, components, data, theme, activeCatalog, catalogId]);
+  }, [root, components, data, theme, catalogId]);
 
   if (!surface) {
     return <div style={{ color: 'gray', padding: '8px' }}>No surface created</div>;

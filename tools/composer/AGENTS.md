@@ -32,7 +32,6 @@ Requires a `.env.local` with at least one of: `GOOGLE_GENERATIVE_AI_API_KEY`, `G
 | `/widget/[id]` | Widget editor with live preview, Monaco code editor, and data panel |
 | `/gallery` | Gallery of saved widgets |
 | `/theater` | Streaming scenario replay with JSONL wire inspection |
-| `/catalog` | Component catalog viewer and custom catalog upload |
 | `/icons` | Material Symbols icon browser |
 | `/components` | Component reference page |
 | `/api/copilotkit/[...slug]` | CopilotKit runtime API route (AI backend) |
@@ -41,13 +40,12 @@ Requires a `.env.local` with at least one of: `GOOGLE_GENERATIVE_AI_API_KEY`, `G
 
 - **`src/lib/a2ui-v09-renderer/`** -- The React renderer for A2UI v0.9. `A2uiSurface.tsx` is the root; it renders a tree by resolving `DeferredChild` components that subscribe to individual component model changes via `useSyncExternalStore`. The `catalog/` directory contains built-in component implementations.
 
-- **`src/app/api/copilotkit/a2ui-prompt-v09.ts`** -- The LLM system prompt. Contains the full A2UI v0.9 spec including component props, data binding, template iteration, formatting functions, and quality guidelines. Two prompt builders: `A2UI_V09_SYSTEM_PROMPT` for the built-in catalog, and `buildCustomCatalogPrompt()` for user-defined catalogs.
+- **`src/app/api/copilotkit/a2ui-prompt-v09.ts`** -- The LLM system prompt. Contains the full A2UI v0.9 spec including component props, data binding, template iteration, formatting functions, and quality guidelines.
 
-- **`src/contexts/`** -- Two React contexts manage global state:
+- **`src/contexts/`** -- React context for global state:
   - `WidgetsContext` -- CRUD operations for widgets, persisted in IndexedDB via localforage.
-  - `CatalogContext` -- Tracks the active component catalog (built-in or custom). Custom catalogs persist in localStorage.
 
-- **`src/components/layout/app-shell.tsx`** -- The root client component. Wraps the app in `CopilotKitProvider > CatalogProvider > WidgetsProvider`.
+- **`src/components/layout/app-shell.tsx`** -- The root client component. Wraps the app in `CopilotKitProvider > WidgetsProvider`.
 
 ### Dependencies to Know
 

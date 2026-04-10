@@ -20,7 +20,6 @@ import { Component, useState, type ReactNode } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { A2UIViewer } from '@/lib/a2ui';
-import { useCatalog } from '@/contexts/catalog-context';
 import type { A2UIComponent } from '@/types/widget';
 
 /**
@@ -69,7 +68,6 @@ interface PreviewPaneProps {
 }
 
 export function PreviewPane({ root, components, data }: PreviewPaneProps) {
-  const { activeCatalog } = useCatalog();
   const [isDark, setIsDark] = useState(false);
 
   // Use a key derived from the component tree to reset the error boundary
@@ -99,7 +97,6 @@ export function PreviewPane({ root, components, data }: PreviewPaneProps) {
             components={components}
             data={data}
             onAction={(action) => console.log('Widget action:', action)}
-            catalog={activeCatalog.catalog}
           />
         </PreviewErrorBoundary>
       </div>

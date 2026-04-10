@@ -27,7 +27,6 @@ import {
 } from "@copilotkit/react-core/v2";
 import { z } from "zod";
 import { parseRobustJSON } from "@/lib/json-parser";
-import { useCatalog } from "@/contexts/catalog-context";
 import { EditorHeader } from "./editor-header";
 import { CodeEditor } from "./code-editor";
 import { PreviewPane } from "./preview-pane";
@@ -49,7 +48,6 @@ interface WidgetEditorProps {
 
 export function WidgetEditor({ widget, initialPrompt }: WidgetEditorProps) {
   const { updateWidget } = useWidgets();
-  const { activeCatalog } = useCatalog();
   const { agent } = useAgent();
   const { copilotkit } = useCopilotKit();
   const hasAutoSent = useRef(false);
@@ -152,21 +150,6 @@ export function WidgetEditor({ widget, initialPrompt }: WidgetEditorProps) {
       description: g.widget.description,
       componentCount: g.widget.components.length,
     })) as unknown as JsonSerializable[],
-  });
-
-  // When a custom catalog is active, inject its component descriptions
-  // so the LLM knows what components are available
-  useAgentContext({
-    description: activeCatalog.isBasic
-      ? "Using the built-in basic A2UI catalog. No custom catalog override."
-      : "IMPORTANT: A custom component catalog is active. Use ONLY these components when generating widgets. Ignore the default A2UI component list from your system prompt.",
-    value: (activeCatalog.isBasic
-      ? { catalogType: "basic" }
-      : {
-          catalogType: "custom",
-          catalogLabel: activeCatalog.label,
-          availableComponents: activeCatalog.componentSummary,
-        }) as unknown as JsonSerializable,
   });
 
   // Tool for AI to edit the widget
@@ -311,19 +294,6 @@ export function WidgetEditor({ widget, initialPrompt }: WidgetEditorProps) {
         <CopilotChat
           threadId={widget.id}
           className="h-full"
-          feather={{ className: "right-0" }}
-          inputProps={{
-            className: "border shadow-sm bg-white/50",
-            sendButton: {
-              className:
-                "enabled:bg-gradient-to-br enabled:from-violet-500 enabled:to-indigo-600 enabled:hover:from-violet-600 enabled:hover:to-indigo-700 enabled:border-0",
-            },
-          }}
-          disclaimer={() => (
-            <div className="text-center text-xs text-muted-foreground py-2">
-              Powered by 🪁 CopilotKit
-            </div>
-          )}
         />
       </div>
     </div>
