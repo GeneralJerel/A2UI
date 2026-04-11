@@ -22,7 +22,7 @@ import {getBaseLeafStyle} from '../utils';
 export const Icon = createComponentImplementation(IconApi, ({props}) => {
   const rawName =
     typeof props.name === 'string' ? props.name : (props.name as {path?: string})?.path;
-  const iconName = rawName?.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
+  const iconName = rawName?.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
   const style: React.CSSProperties = {
     ...getBaseLeafStyle(),
     fontSize: '24px',

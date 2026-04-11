@@ -102,14 +102,8 @@ export default function TheaterPage() {
   const [jsonMode, setJsonMode] = useState<'pretty' | 'wire'>('pretty');
   const [expandedChunks, setExpandedChunks] = useState<Set<number>>(new Set());
   const [mobileView, setMobileView] = useState<'left' | 'renderer'>('renderer');
-  const [renderer, setRenderer] = useState<RendererType>(() => {
-    const url = readURL();
-    return (url.renderer && RENDERERS.includes(url.renderer as RendererType)) ? url.renderer as RendererType : RENDERERS[0];
-  });
-  const [selectedScenario, setSelectedScenario] = useState<ScenarioId>(() => {
-    const url = readURL();
-    return (url.scenario && url.scenario in scenarios) ? url.scenario as ScenarioId : 'restaurant-finder';
-  });
+  const [renderer, setRenderer] = useState<RendererType>(RENDERERS[0]);
+  const [selectedScenario, setSelectedScenario] = useState<ScenarioId>('restaurant-finder');
 
   const {
     playbackState,
@@ -133,6 +127,10 @@ export default function TheaterPage() {
 
   useEffect(() => {
     const url = readURL();
+    if (url.renderer && RENDERERS.includes(url.renderer as RendererType))
+      setRenderer(url.renderer as RendererType);
+    if (url.scenario && url.scenario in scenarios)
+      setSelectedScenario(url.scenario as ScenarioId);
     if (url.step !== undefined) seek(url.step);
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   }, []);

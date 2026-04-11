@@ -51,12 +51,17 @@ function parseSimpleMarkdown(text: string): string {
       }
 
       if (/^[-*]\s/.test(block)) {
-        const items = block
-          .split('\n')
-          .filter((line) => /^[-*]\s/.test(line))
-          .map((line) => `<li>${inlineMarkdown(line.replace(/^[-*]\s+/, ''))}</li>`)
-          .join('');
-        return `<ul style="margin:0.5em 0;padding-left:1.5em">${items}</ul>`;
+        const lines = block.split('\n');
+        const items: string[] = [];
+        for (const line of lines) {
+          if (/^[-*]\s/.test(line)) {
+            items.push(line.replace(/^[-*]\s+/, ''));
+          } else if (items.length > 0) {
+            items[items.length - 1] += ' ' + line.trim();
+          }
+        }
+        const html = items.map((item) => `<li>${inlineMarkdown(item)}</li>`).join('');
+        return `<ul style="margin:0.5em 0;padding-left:1.5em">${html}</ul>`;
       }
 
       return `<p style="margin:0.5em 0">${inlineMarkdown(block)}</p>`;

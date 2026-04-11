@@ -108,7 +108,8 @@ function setAtPath(obj: Record<string, unknown>, segments: string[], value: unkn
   for (let i = 0; i < segments.length - 1; i++) {
     const key = segments[i]!;
     if (current[key] === undefined || typeof current[key] !== 'object') {
-      current[key] = {};
+      const nextKey = segments[i + 1];
+      current[key] = /^\d+$/.test(nextKey ?? '') ? [] : {};
     }
     current = current[key] as Record<string, unknown>;
   }
