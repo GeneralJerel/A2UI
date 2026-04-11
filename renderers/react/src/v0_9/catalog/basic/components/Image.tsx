@@ -28,6 +28,7 @@ export const Image = createComponentImplementation(ImageApi, ({props}) => {
   const style: React.CSSProperties = {
     ...getBaseLeafStyle(),
     objectFit: mapFit(props.fit),
+    // Subtract left + right LEAF_MARGIN (8px each) so the image doesn't overflow its parent.
     width: `calc(100% - ${2 * 8}px)`,
     minWidth: 0,
     height: 'auto',

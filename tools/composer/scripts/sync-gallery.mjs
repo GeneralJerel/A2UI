@@ -60,12 +60,13 @@ const HEIGHTS = {
   'software-purchase': 380, 'restaurant-card': 340, 'shipping-status': 380,
   'credit-card': 280, 'step-counter': 320, 'recipe-card': 300,
   'contact-card': 400, 'podcast-episode': 300, 'stats-card': 240,
-  'countdown-timer': 260, 'movie-card': 380, 'financial-data-grid': 220,
+  'countdown-timer': 260, 'movie-card': 380, 'financial-data-grid': 280,
   'live-invitation-builder': 700,
 };
 
 // Gallery card scale overrides (for wide content that needs shrinking)
 const SCALES = {
+  'financial-data-grid': 0.85,
 };
 const DEFAULT_HEIGHT = 340;
 
